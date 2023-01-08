@@ -6,6 +6,8 @@ router.get('/', function(req, res, next) {
   res.send('Users Api HIT');
 });
 
-router.get('/check', userController.testSql);
+router.post('/register', userController.regUser);
+router.post('/getTokenData', userController.getTokenData);
 
-module.exports = router;
+
+module.exports = router; 
