@@ -27,8 +27,8 @@ const secret_key = 'my_secret_key'
 
       if(err) return res.sendStatus(401)
 
-      req.decode_data = result;
-      // next();
+      req.decode_data = result.decode_data;
+      next();
     })
 
   }
@@ -47,11 +47,12 @@ const secret_key = 'my_secret_key'
       const query = "INSERT INTO `users` (`fname`, `lname`, `email`, `password`, `phone`, `address`,`status`,`token`) VALUES  ('" + req.body.fname + "', '" + req.body.lname + "', '" + req.body.email + "', '" + req.body.password + "', '" + req.body.phone + "', '" + req.body.address + "','" + constant.ACTIVE + "','" + null + "'); ";
 
       let reg_user  = await runQuery(query);
-  
       if (reg_user) {
-        console.log('reg_user',reg_user)
+        let query_data = "SELECT * FROM users where id = '" + reg_user.insertId + "'";
+        let getData  = await runQuery(query_data);
+        console.log('userData', getData)
         // return false;
-        const token = jwt.sign({decode_data: 'herooo'}, secret_key , { expiresIn: "365d" })
+        const token = jwt.sign({decode_data: getData}, secret_key , { expiresIn: "365d" })
         let updateQuery = `
                             UPDATE
                               users
@@ -86,11 +87,54 @@ const secret_key = 'my_secret_key'
     }
   };
 
+  //Get Token Data By Function 
   exports.getTokenData = async (req, res) => {
     try {
       // console.log('request', req)
       let getData = authenticationToken(req)
-      console.log('getData', getData)
+      console.log('Final Token Data', req.decode_data)
+      if(req.decode_data){
+        res.send({
+          code: constant.SUCCESS_CODE,
+          message:'Token Data Get successfully',
+          data: req.decode_data,
+          
+        });
+      }else{
+        res.send({
+          code: constant.ERROR_CODE,
+          message: 'Something Went Wrong in Token',
+        });
+      }
+
+
+    }catch (err) {
+      res.send({
+        code: constant.ERROR_CODE,
+        message: err.message,
+      });
+    }
+  };
+
+  //Using of Middleware Data
+  exports.getTokenMiddlewareData = async (req, res) => {
+    try {
+      // console.log('request', req)
+      let getData = authenticationToken(req)
+      console.log('Final Token Data', req.decode_data)
+      if(req.decode_data){
+        res.send({
+          code: constant.SUCCESS_CODE,
+          message:'Token Data Get successfully',
+          data: req.decode_data,
+          
+        });
+      }else{
+        res.send({
+          code: constant.ERROR_CODE,
+          message: 'Something Went Wrong in Token',
+        });
+      }
 
 
     }catch (err) {
