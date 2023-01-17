@@ -17,7 +17,7 @@ const secret_key = 'my_secret_key'
     });
   }
 
-  //Verify Token
+  //Verify Token with function
   function authenticationToken(req, res, next){
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split('_')[1]
@@ -28,11 +28,12 @@ const secret_key = 'my_secret_key'
       if(err) return res.sendStatus(401)
 
       req.decode_data = result.decode_data;
-      next();
+      // next();
     })
 
   }
 
+  //Register 
   exports.regUser = async (req, res) => {
     try {
       console.log('req.body.email', req.body.email)
@@ -120,7 +121,6 @@ const secret_key = 'my_secret_key'
   exports.getTokenMiddlewareData = async (req, res) => {
     try {
       // console.log('request', req)
-      let getData = authenticationToken(req)
       console.log('Final Token Data', req.decode_data)
       if(req.decode_data){
         res.send({
@@ -144,3 +144,172 @@ const secret_key = 'my_secret_key'
       });
     }
   };
+
+  //Get Users All Data
+  exports.getUsersData = async (req, res) =>{
+
+   try{
+    let get_data  = `  SELECT
+                          *
+                        FROM
+                          users
+                      `;
+
+    let get_detail  = await runQuery(get_data);
+    if (get_detail.length > 0) {
+
+      return  res.json({
+                code: constant.SUCCESS_CODE,
+                msg:'Get Details Successfully',
+                data: get_detail
+              })
+
+    } else {
+      return res.json({
+              code: constant.ERROR_CODE,
+              msg:get_detail,
+              data: []
+            })
+
+    }
+
+   }catch (err) {
+    res.send({
+      code: constant.ERROR_CODE,
+      message: err.message,
+    });
+  }
+  }
+
+  //Get Users All Data
+  exports.getUsersDataById = async (req, res) =>{
+
+    try{
+      let user_id = req.params.user_id
+      let get_data  = `  SELECT
+                              *
+                            FROM
+                              users
+                            WHERE
+                              id  = '${user_id}'
+                          `;
+      let get_detail  = await runQuery(get_data);
+      if (get_detail.length > 0) {
+        return  res.json({
+                  code: constant.SUCCESS_CODE,
+                  msg:'Get Details Successfully',
+                  data: get_detail
+                })
+  
+      } else {
+        return res.json({
+                code: constant.ERROR_CODE,
+                msg:'No User Found',
+                data: []
+              })
+  
+      }
+  
+    }catch (err) {
+      res.send({
+        code: constant.ERROR_CODE,
+        message: err.message,
+      });
+    }
+  }
+
+  // Update Users 
+  exports.updateUser = async (req, res) =>{
+
+    try{
+      let user_id = req.params.user_id
+      // let update_data  = ` //Some issue in syntax
+      //                       UPDATE  
+      //                         users
+      //                       SET
+      //                         fname                     = '${req.body.fname}',
+      //                         lname                     = '${req.body.lname}',
+      //                         email                     = '${req.body.email}',
+      //                         password                  = '${req.body.password}',
+      //                         phone                     = '${req.body.phone}',
+      //                         address                   = '${req.body.address}',
+      //                       WHERE
+      //                         id                        = '${user_id}'
+      //                     `;
+    let update_data = "UPDATE `users` SET `fname`='" + req.body.fname + "', `lname`='" + req.body.lname + "',`email`='" +  req.body.email + "',`password`='" + req.body.password + "',`phone`='" + req.body.phone + "',`address`='" + req.body.address + "' WHERE `id` = '" + user_id + "'";
+
+    console.log('check-query',update_data )
+                    
+      let get_detail  = await runQuery(update_data);
+      console.log('check-get_detail',get_detail )
+
+      if (get_detail.length != '') {
+        return  res.json({
+                  code: constant.SUCCESS_CODE,
+                  msg:'User Update Successfully',
+                  // data: get_detail
+                })
+  
+      } else {
+        return res.json({
+                code: constant.ERROR_CODE,
+                msg:'No User Found',
+                data: []
+              })
+  
+      }
+  
+    }catch (err) {
+      res.send({
+        code: constant.ERROR_CODE,
+        message: err.message,
+      });
+    }
+  }
+
+
+  //Delete User
+  exports.deleteUser = async (req, res) =>{
+
+    try{
+      let user_id = req.params.user_id
+
+      //Delete Permanently
+      // let deleteQuery = "DELETE FROM `users` WHERE `id` = '" + user_id + "'";
+      
+      // OR can be status change
+      let deleteQuery =  `
+                            UPDATE  
+                            users
+                            SET
+                              status  = '${constant.INACTIVE}'
+                            WHERE
+                              id      = ${user_id}
+                          `;
+                    
+      let get_detail  = await runQuery(deleteQuery);
+      console.log('check-get_detail',get_detail )
+
+      if (get_detail.length != '') {
+        return  res.json({
+                  code: constant.SUCCESS_CODE,
+                  msg:'User Delete Successfully',
+                  // data: get_detail
+                })
+  
+      } else {
+        return res.json({
+                code: constant.ERROR_CODE,
+                msg:'No User Found',
+                data: []
+              })
+  
+      }
+  
+    }catch (err) {
+      res.send({
+        code: constant.ERROR_CODE,
+        message: err.message,
+      });
+    }
+  }

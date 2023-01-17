@@ -13,8 +13,20 @@ router.get('/', function(req, res, next) {
 
 
 router.post('/register', userController.regUser);
-router.post('/getTokenData', userController.getTokenData); //Get Data by Token using function in one file
+router.get('/getTokenData', userController.getTokenData); //Get Data by Token using function in one file
 
-router.post('/getTokenMiddlewareData',[authJwt.verifyToken], userController.getTokenMiddlewareData); //Get Data by Token by Middleware
+router.get('/getTokenMiddlewareData',[authJwt.verifyToken], userController.getTokenMiddlewareData); //Get Data by Token by Middleware
+//Get All Users Data
+router.get('/getUsersData',[authJwt.verifyToken], userController.getUsersData);
+
+//Get User By Id  updateUsers
+router.get('/getUsersDataById/:user_id',[authJwt.verifyToken],userController.getUsersDataById)
+
+//Update User
+router.put('/updateUser/:user_id',[authJwt.verifyToken],userController.updateUser)
+
+//Delete User
+router.delete('/deleteUser/:user_id',[authJwt.verifyToken],userController.deleteUser)
+
 
 module.exports = router; 
