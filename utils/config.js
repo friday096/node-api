@@ -30,7 +30,7 @@ var config = {
       port: 465,
       auth: {
         user: 'ssantoshh1996@gmail.com',
-        pass: 'gkzpgelcazzvpnej',
+        pass: 'app-pass',
       },
       tls: {
         rejectUnauthorized: false
