@@ -28,5 +28,9 @@ router.put('/updateUser/:user_id',[authJwt.verifyToken],userController.updateUse
 //Delete User
 router.delete('/deleteUser/:user_id',[authJwt.verifyToken],userController.deleteUser)
 
+//Send Email with Nodemailer
+router.post('/send-email',userController.sendEmail)
+
+
 
 module.exports = router; 

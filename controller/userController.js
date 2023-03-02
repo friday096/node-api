@@ -1,6 +1,9 @@
 const database = require(`../utils/db`)
 const constant = require(`../utils/constant`)
 const jwt = require('jsonwebtoken')
+const nodemailer = require('nodemailer');
+const config = require('../utils/config')
+
 const secret_key = 'my_secret_key'
   //Check SQL Query
   function runQuery(query) {
@@ -305,6 +308,56 @@ const secret_key = 'my_secret_key'
               })
   
       }
+  
+    }catch (err) {
+      res.send({
+        code: constant.ERROR_CODE,
+        message: err.message,
+      });
+    }
+  }
+
+  //Send Email with Nodemailer
+
+  exports.sendEmail = async (req, res) =>{
+
+    try{
+      var transporter = nodemailer.createTransport(config.smtp_data);
+      var mailOptions = {
+        from: config.from_email,
+        to: 'rajak3819@gmail.com',
+        subject: 'Testing Email',
+        html: `<!DOCTYPE html>
+            <html lang="en">
+           
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Vetrine.com</title>
+            </head>
+           
+            <body>
+              <p> Hello Nodemailer </p>
+            </body>
+           
+            </html>`,
+    };
+    // transporter.sendMail(mailOptions);
+    transporter.sendMail (mailOptions, function (error, info) {
+      if (error) {
+      return res.json({
+        code: constant.ERROR_CODE,
+        msg:error,
+      })
+      }
+      else {
+      return  res.json({
+        code: constant.SUCCESS_CODE,
+        msg:'Email Send Successfully',
+      })
+      }
+      })
   
     }catch (err) {
       res.send({
